@@ -1,0 +1,70 @@
+class pr001 {
+	public static void main(String[]arg){
+		for (int i = 0; i < 10; i++)
+		System.out.println("Проверка работоспособности");
+	}
+}
+
+
+FROM openjdk
+COPY . /java
+WORKDIR /java
+RUN javac pr001.java
+CMD ["java", "pr001"]
+
+
+
+@lunotplay ➜ /workspaces/02.01-/prj1 (main) $ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+testjava     0.1       ec6343c61a37   4 minutes ago   470MB
+postgres     latest    563071385448   4 weeks ago     438MB
+mariadb      latest    a914eff5d2eb   5 weeks ago     336MB
+mysql        latest    fa262c3a6564   2 months ago    797MB
+@lunotplay ➜ /workspaces/02.01-/prj1 (main) $ docker run testjava:0.1
+Проверка работоспособности
+@lunotplay ➜ /workspaces/02.01-/prj1 (main) $ vim pr001.java
+@lunotplay ➜ /workspaces/02.01-/prj1 (main) $ docker run testjava:0.1
+Проверка работоспособности
+
+@lunotplay ➜ ~ $ mkdir prj2
+mkdir: cannot create directory ‘prj2’: File exists
+@lunotplay ➜ ~ $ vim pr002.php
+@lunotplay ➜ ~ $ vim Dockerfile
+
+@lunotplay ➜ ~ $ docker build -t app-php:0.1 .
+[+] Building 112.1s (9/9) FINISHED                                                                                                                                               docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                       0.0s
+ => => transferring dockerfile: 111B                                                                                                                                                       0.0s
+ => [internal] load metadata for docker.io/library/php:7.2-apache                                                                                                                          1.1s
+ => [auth] library/php:pull token for registry-1.docker.io                                                                                                                                 0.0s
+ => [internal] load .dockerignore                                                                                                                                                          0.0s
+ => => transferring context: 2B                                                                                                                                                            0.0s
+ => [1/3] FROM docker.io/library/php:7.2-apache@sha256:4dc0f0115acf8c2f0df69295ae822e49f5ad5fe849725847f15aa0e5802b55f8                                                                   25.1s
+ => => resolve docker.io/library/php:7.2-apache@sha256:4dc0f0115acf8c2f0df69295ae822e49f5ad5fe849725847f15aa0e5802b55f8                                                                    0.0s
+ => => sha256:c61d277263e19d2ce30a6bae41115c811eb0f9274a601a5e3ee621e54c8a74f7 13.18kB / 13.18kB                                                                                           0.0s
+ => => sha256:25417b6c9c2e1a52b551ba89087f4d07c216f58784773c9e7a1710a1f6e2b4a1 3.24kB / 3.24kB                                                                                             0.0s
+ => => sha256:db606474d60ce31604505c7d6dad9a66cb42f3818fca738832db2f2091cf89c9 225B / 225B                                  
+
+
+@lunotplay ➜ ~ $ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+app-php      0.1       7e496a0e1293   37 seconds ago   1.99GB
+testjava     0.1       ec6343c61a37   50 minutes ago   470MB
+postgres     latest    563071385448   4 weeks ago      438MB
+mariadb      latest    a914eff5d2eb   5 weeks ago      336MB
+mysql        latest    fa262c3a6564   2 months ago     797MB
+
+
+@lunotplay ➜ ~ $ docker build -t app-php:0.2 .
+[+] Building 59.0s (9/9) FINISHED                                                                                                                                                docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                                       0.0s
+ => => transferring dockerfile: 111B                                                                                                                                                       0.0s
+ => [internal] load metadata for docker.io/library/php:7.2-apache                                                                                                                          0.6s
+ => [auth] library/php:pull token for registry-1.docker.io                                                                                                                                 0.0s
+ => [internal] load .dockerignore                                                                                                                                                          0.0s
+ => => transferring context: 2B                                                                    
+
+@lunotplay ➜ ~ $ docker run -d -p 8082:80 --name phpapp app-php:0.2
+24eaf9990bdc0dc5355b21ada58eea808bcb225121222dc6279e9cfe5e3c7fdd
+
+https://ideal-space-dollop-4jvr6xqvxr9937p7p-8082.app.github.dev/
