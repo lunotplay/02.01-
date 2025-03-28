@@ -1,0 +1,87 @@
+1. Создание и работа с контейнерами
+
+@lunotplay ➜ /workspaces/02.01- (main) $ docker volume create vol1
+vol1
+@lunotplay ➜ /workspaces/02.01- (main) $ docker volume create vol2
+vol2
+@lunotplay ➜ /workspaces/02.01- (main) $ docker volume prune
+WARNING! This will remove anonymous local volumes not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Volumes:
+f72ecc43dff5c25e0717664fa4387bced5d35a79e33bada14e729f2dcc55c1b2
+25da88e7d6ee5757475ed34b37f13c59af0c0e4d57a58436d759753528a72d59
+3e6011839aafa121f0bcb56befbaa14de17dcf38e733e152492057e4288d544d
+Total reclaimed space: 456.2MB
+@lunotplay ➜ /workspaces/02.01- (main) $ docker volume inspect vol1
+[
+    {
+        "CreatedAt": "2025-03-28T05:42:17Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/vol1/_data",
+        "Name": "vol1",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+@lunotplay ➜ /workspaces/02.01- (main) $ docker run --mount type=volume,source=vol1,target=/home/vol1 --name myub -it ubuntu:22.04
+root@7cdebc364c55:/# cat > test_vol.txt
+Проверка функционирования тома vol1
+451876
+root@7cdebc364c55:/# exit
+exit
+@lunotplay ➜ /workspaces/02.01- (main) $ docker run --mount type=volume,source=vol1,target=/home/vol1 --mount type=volume,source=vol2,target=/home/vol2  --name myub1 -it --rm  ubuntu:22.04
+root@271e85764796:/# cd /home/vol1
+root@271e85764796:/home/vol1# ls -1
+test_vol2_myub3.txt
+root@271e85764796:/home/vol1# cat > test_vol2_myub1.txt
+Проверяем работу с vol1 из контейнера myub1
+root@271e85764796:/home/vol1# cd ../vol2
+root@271e85764796:/home/vol2# ls -1
+root@271e85764796:/home/vol2# cp ../vol1/* ./
+root@271e85764796:/home/vol2# ls -1
+test_vol2_myub1.txt
+test_vol2_myub3.txt
+root@271e85764796:/home/vol2# cd ../vol1
+root@271e85764796:/home/vol1# ls -1
+test_vol2_myub1.txt
+test_vol2_myub3.txt
+root@271e85764796:/home/vol1# mv test_vol2_myub1.txt test_vol1_myub1.txt
+root@271e85764796:/home/vol1# ls -1
+test_vol1_myub1.txt
+test_vol2_myub3.txt
+root@271e85764796:/home/vol1# exit
+exit
+@lunotplay ➜ /workspaces/02.01- (main) $ docker ps -a
+CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS                      PORTS     NAMES
+7cdebc364c55   ubuntu:22.04   "/bin/bash"   19 minutes ago   Exited (0) 17 minutes ago             myub
+@lunotplay ➜ /workspaces/02.01- (main) $ mkdir vol3
+@lunotplay ➜ /workspaces/02.01- (main) $ cd vol3
+@lunotplay ➜ /workspaces/02.01-/vol3 (main) $ cat > message_to_container
+Привет от хостовой системы контейнеру
+root@49242b2c668b:/home/vol3# cd ..
+root@49242b2c668b:/home# cd vol2
+root@49242b2c668b:/home/vol2# ls -1
+test_vol2_myub1.txt
+test_vol2_myub3.txt
+root@49242b2c668b:/home/vol2# cd ..
+root@49242b2c668b:/home# 
+
+2. Работа во втором терминале
+
+@lunotplay ➜ /workspaces/02.01-/vol3 (main) $ docker run -it --mount type=bind,source=.,target=/home/mnt --name cont1 --rm ubuntu:22.04
+root@8b80610ac084:/# cd /home/mnt
+root@8b80610ac084:/home/mnt# ls -1
+message_to_container
+root@8b80610ac084:/home/mnt# cat > message_from_cont1
+Привет от контейнера cont1
+root@8b80610ac084:/home/mnt# exit
+exit
+@lunotplay ➜ /workspaces/02.01-/vol3 (main) $ ls -1
+message_from_cont1
+message_to_container
+@lunotplay ➜ /workspaces/02.01-/vol3 (main) $ cat message_from_cont1
+Привет от контейнера cont1
+@lunotplay ➜ /workspaces/02.01-/vol3 (main) $ cat message_to_container
+Привет от хостовой системы контейнеру
