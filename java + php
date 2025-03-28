@@ -121,6 +121,15 @@ phpapp
 9a343e73c9c1fb5838530ba74791d2a6ce0d7f0c6eb703d1e14f2332d7a7f576
 
 @lunotplay ➜ /workspaces/02.01- (main) $ vim docker-compose.yml
+
+services:
+     phpmyadmin:
+db:
+             image: mariadb:10.11
+             restart: always
+             environment:
+               MYSQL_ROOT_PASSWORD: 12345
+
 @lunotplay ➜ /workspaces/02.01- (main) $ docker-compose build . 
 validating /workspaces/02.01-/docker-compose.yml: services.phpmyadmin must be a mapping
 @lunotplay ➜ /workspaces/02.01- (main) $ docker-compose build .
